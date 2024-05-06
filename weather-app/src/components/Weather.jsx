@@ -110,20 +110,24 @@ const Weather = () => {
                         <p>Description: {weatherData.weather[0].description}</p>
                         <div>
                             <h3>Hourly Forecast (Next 24 hours):</h3>
-                            <div className="forecast hourly-forecast">
+                            <div className="scrollable-row">
                                 {hourlyData.slice(0, 24).map((hour, index) => (
                                     <div key={index} className="forecast-card">
+                                        <img src={`http://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`} alt="Weather icon" />
                                         <p>{new Date(hour.dt * 1000).toLocaleTimeString()}: {hour.main.temp}°C</p>
+                                        <p>{hour.weather[0].description}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                         <div>
                             <h3>Daily Forecast (Next 7 days):</h3>
-                            <div className="forecast daily-forecast">
+                            <div className="scrollable-row">
                                 {dailyData.slice(0, 7).map((day, index) => (
                                     <div key={index} className="forecast-card">
+                                        <img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt="Weather icon" />
                                         <p>{new Date(day.dt * 1000).toLocaleDateString()}: High of {day.temp.max}°C, Low of {day.temp.min}°C</p>
+                                        <p>{day.weather[0].description}</p>
                                     </div>
                                 ))}
                             </div>

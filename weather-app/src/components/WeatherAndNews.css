@@ -42,8 +42,18 @@
 }
 
 .forecast-card {
-    background-color: #f0f0f0;
+    flex: 0 0 auto;
+    width: 300px;
+    background-color: dimgray;
     margin: 10px;
     padding: 10px;
     border-radius: 5px;
+}
+
+.scrollable-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px; /* Adjust the space between cards */
+    padding: 10px 0;
 }
