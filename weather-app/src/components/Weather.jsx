@@ -6,6 +6,8 @@ import './WeatherAndNews.css';
 const Weather = () => {
     const [input, setInput] = useState('');
     const [weatherData, setWeatherData] = useState(null);
+    const [hourlyData, setHourlyData] = useState([]);
+    const [dailyData, setDailyData] = useState([]);
     const [newsData, setNewsData] = useState([]);
     const [error, setError] = useState(null);
 
@@ -13,16 +15,42 @@ const Weather = () => {
         setInput(event.target.value);
     };
 
-    const fetchWeather = async (lat, lon) => {
+    const fetchCurrentWeather = async (lat, lon) => {
         const apiKey = 'd9146e33f2d8cb3c5703c3a8078fdb24';
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
 
         try {
-            const response = await fetch(weatherUrl);
+            const response = await fetch(url);
             const data = await response.json();
             setWeatherData(data);
         } catch (err) {
-            setError('Failed to fetch weather data. Please try again.');
+            setError('Failed to fetch current weather. Please try again.');
+        }
+    };
+
+    const fetchHourlyForecast = async (lat, lon) => {
+        const apiKey = 'd9146e33f2d8cb3c5703c3a8078fdb24';
+        const url = `https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            setHourlyData(data.list.slice(0, 24));
+        } catch (err) {
+            setError('Failed to fetch hourly forecast. Please try again.');
+        }
+    };
+
+    const fetchDailyForecast = async (lat, lon) => {
+        const apiKey = 'd9146e33f2d8cb3c5703c3a8078fdb24';
+        const url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=7&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            setDailyData(data.list);
+        } catch (err) {
+            setError('Failed to fetch daily forecast. Please try again.');
         }
     };
 
@@ -41,7 +69,9 @@ const Weather = () => {
             if (data.length === 0) {
                 setError('No results found. Please check your input.');
             } else {
-                fetchWeather(data[0].lat, data[0].lon);
+                fetchCurrentWeather(data[0].lat, data[0].lon);
+                fetchHourlyForecast(data[0].lat, data[0].lon);
+                fetchDailyForecast(data[0].lat, data[0].lon);
                 setError(null);
             }
         } catch (err) {
@@ -78,6 +108,26 @@ const Weather = () => {
                         <h3>Current Weather:</h3>
                         <p>Temperature: {weatherData.main.temp}°C</p>
                         <p>Description: {weatherData.weather[0].description}</p>
+                        <div>
+                            <h3>Hourly Forecast (Next 24 hours):</h3>
+                            <div className="forecast hourly-forecast">
+                                {hourlyData.slice(0, 24).map((hour, index) => (
+                                    <div key={index} className="forecast-card">
+                                        <p>{new Date(hour.dt * 1000).toLocaleTimeString()}: {hour.main.temp}°C</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <h3>Daily Forecast (Next 7 days):</h3>
+                            <div className="forecast daily-forecast">
+                                {dailyData.slice(0, 7).map((day, index) => (
+                                    <div key={index} className="forecast-card">
+                                        <p>{new Date(day.dt * 1000).toLocaleDateString()}: High of {day.temp.max}°C, Low of {day.temp.min}°C</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
                 {error && <p>{error}</p>}
