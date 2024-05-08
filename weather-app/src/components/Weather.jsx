@@ -1,7 +1,8 @@
-// improve data intake for getting coordinates
-
 import React, { useState, useEffect } from 'react';
 import './WeatherAndNews.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+
 
 const Weather = () => {
     const [input, setInput] = useState('');
@@ -12,8 +13,8 @@ const Weather = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchNews(); // Fetch news when the component mounts
-        getUserLocation(); // Get user location and fetch weather on load
+        fetchNews();
+        getUserLocation();
     }, []);
 
     const handleInputChange = (event) => {
@@ -121,7 +122,7 @@ const Weather = () => {
         try {
             const response = await fetch(url);
             const data = await response.json();
-            setNewsData(data.results.slice(0, 5)); // Get only the top 5 stories
+            setNewsData(data.results.slice(0, 5));
         } catch (error) {
             setError('Failed to fetch news. Please try again later.');
         }
@@ -129,6 +130,9 @@ const Weather = () => {
 
     return (
         <div className="container">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            </meta>
+
             <div className="header">
                 <input
                     type="text"
@@ -136,34 +140,36 @@ const Weather = () => {
                     onChange={handleInputChange}
                     placeholder="Search by City or Postal Code"
                 />
-                <button onClick={fetchCoordinates}>Get Weather</button>
+                <button className = "button" onClick={fetchCoordinates}>Get Weather</button>
             </div>
-            <div className="weather-section">
-                {weatherData && (
-                    <div>
-                        <h3>Current Weather:</h3>
-                        <p>Temperature: {weatherData.main.temp}°C</p>
-                        <p>Description: {weatherData.weather[0].description}</p>
+            <div className="content">
+                <div className="weather-section">
+                    {weatherData && (
                         <div>
-                            <h3>Hourly Forecast (Next 24 hours):</h3>
-                            <div className="scrollable-row">
-                                {hourlyData.slice(0, 24).map((hour, index) => (
-                                    <div key={index} className="forecast-card">
-                                        <img src={`http://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`} alt="Weather icon" />
-                                        <p>{new Date(hour.dt * 1000).toLocaleTimeString()}: {hour.main.temp}°C</p>
-                                        <p>{hour.weather[0].description}</p>
-                                    </div>
-                                ))}
+                            <h3>Current Weather:</h3>
+                            <p>Temperature: {weatherData.main.temp}°C</p>
+                            <p>Description: {weatherData.weather[0].description}</p>
+                            <div>
+                                <h3>Hourly Forecast (Next 24 hours):</h3>
+                                <div className="scrollable-row">
+                                    {hourlyData.slice(0, 24).map((hour, index) => (
+                                        <div key={index} className="forecast-card">
+                                            <p>{new Date(hour.dt * 1000).toLocaleTimeString()}</p>
+                                            <img src={`http://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`} alt="Weather icon" />
+                                            <p>{hour.main.temp}°C</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
                         <div>
                             <h3>Daily Forecast (Next 7 days):</h3>
                             <div className="scrollable-row">
                                 {dailyData.slice(0, 7).map((day, index) => (
                                     <div key={index} className="forecast-card">
+                                        <p>{new Date(day.dt * 1000).toLocaleDateString()}</p>
                                         <img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt="Weather icon" />
-                                        <p>{new Date(day.dt * 1000).toLocaleDateString()}: High of {day.temp.max}°C, Low of {day.temp.min}°C</p>
-                                        <p>{day.weather[0].description}</p>
+                                        <p>High of {day.temp.max}°C</p>
+                                        <p>Low of {day.temp.min}°C</p>
                                     </div>
                                 ))}
                             </div>
@@ -172,14 +178,15 @@ const Weather = () => {
                 )}
                 {error && <p>{error}</p>}
             </div>
-            <div className="news-section">
-                {newsData.map((story, index) => (
-                    <div key={index} className="news-card">
-                        {story.multimedia && <img src={story.multimedia[0].url} alt={story.title} />}
-                        <a href={story.url} target="_blank" rel="noopener noreferrer"><h4>{story.title}</h4></a>
-                        <p>{story.byline}</p>
-                    </div>
-                ))}
+                <div className="news-section">
+                    {newsData.map((story, index) => (
+                        <div key={index} className="news-card">
+                            {story.multimedia && <img src={story.multimedia[0].url} alt={story.title} />}
+                            <a href={story.url} target="_blank" rel="noopener noreferrer"><h4>{story.title}</h4></a>
+                            <p>{story.byline}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
