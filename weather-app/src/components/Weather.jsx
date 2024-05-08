@@ -1,6 +1,6 @@
 // improve data intake for getting coordinates
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './WeatherAndNews.css';
 
 const Weather = () => {
@@ -10,6 +10,10 @@ const Weather = () => {
     const [dailyData, setDailyData] = useState([]);
     const [newsData, setNewsData] = useState([]);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchNews(); // Fetch news when the component mounts
+    }, []);
 
     const handleInputChange = (event) => {
         setInput(event.target.value);
@@ -60,19 +64,36 @@ const Weather = () => {
             return;
         }
 
+        const isPostalCode = /^\d+$/.test(input);
         const apiKey = 'd9146e33f2d8cb3c5703c3a8078fdb24';
-        const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${input}&limit=1&appid=${apiKey}`;
+        let geocodeUrl = "";
+
+        if (isPostalCode) {
+            geocodeUrl = `https://api.openweathermap.org/geo/1.0/zip?zip=${input}&appid=${apiKey}`;
+        } else {
+            geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${input}&limit=1&appid=${apiKey}`;
+        }
 
         try {
             const response = await fetch(geocodeUrl);
             const data = await response.json();
-            if (data.length === 0) {
+
+            if (Array.isArray(data) && data.length === 0) {
                 setError('No results found. Please check your input.');
-            } else {
+            } else if (!Array.isArray(data) && data.lat && data.lon) {
+                // Handle single object response from zip code search
+                fetchCurrentWeather(data.lat, data.lon);
+                fetchHourlyForecast(data.lat, data.lon);
+                fetchDailyForecast(data.lat, data.lon);
+                setError(null);
+            } else if (Array.isArray(data) && data.length > 0) {
+                // Handle array response from city search
                 fetchCurrentWeather(data[0].lat, data[0].lon);
                 fetchHourlyForecast(data[0].lat, data[0].lon);
                 fetchDailyForecast(data[0].lat, data[0].lon);
                 setError(null);
+            } else {
+                setError('Unexpected response format. Please try again.');
             }
         } catch (err) {
             setError('Failed to fetch coordinates. Please try again.');
@@ -94,15 +115,16 @@ const Weather = () => {
 
     return (
         <div className="container">
-            <div className="weather-section">
+            <div className="header">
                 <input
                     type="text"
                     value={input}
                     onChange={handleInputChange}
-                    placeholder="Enter location (address, city, zip code)"
+                    placeholder="Search by City or Postal Code"
                 />
                 <button onClick={fetchCoordinates}>Get Weather</button>
-                <button onClick={fetchNews}>Get News</button>
+            </div>
+            <div className="weather-section">
                 {weatherData && (
                     <div>
                         <h3>Current Weather:</h3>
