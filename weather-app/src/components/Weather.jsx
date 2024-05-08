@@ -13,10 +13,26 @@ const Weather = () => {
 
     useEffect(() => {
         fetchNews(); // Fetch news when the component mounts
+        getUserLocation(); // Get user location and fetch weather on load
     }, []);
 
     const handleInputChange = (event) => {
         setInput(event.target.value);
+    };
+
+    const getUserLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const { latitude, longitude } = position.coords;
+                fetchCurrentWeather(latitude, longitude);
+                fetchHourlyForecast(latitude, longitude);
+                fetchDailyForecast(latitude, longitude);
+            }, () => {
+                setError('Unable to retrieve your location');
+            });
+        } else {
+            setError('Geolocation is not supported by this browser.');
+        }
     };
 
     const fetchCurrentWeather = async (lat, lon) => {
@@ -81,13 +97,11 @@ const Weather = () => {
             if (Array.isArray(data) && data.length === 0) {
                 setError('No results found. Please check your input.');
             } else if (!Array.isArray(data) && data.lat && data.lon) {
-                // Handle single object response from zip code search
                 fetchCurrentWeather(data.lat, data.lon);
                 fetchHourlyForecast(data.lat, data.lon);
                 fetchDailyForecast(data.lat, data.lon);
                 setError(null);
             } else if (Array.isArray(data) && data.length > 0) {
-                // Handle array response from city search
                 fetchCurrentWeather(data[0].lat, data[0].lon);
                 fetchHourlyForecast(data[0].lat, data[0].lon);
                 fetchDailyForecast(data[0].lat, data[0].lon);
