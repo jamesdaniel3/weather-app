@@ -4,18 +4,19 @@ html, body {
     width: 100%;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding-left: 0;
-    padding-right: 0;
+.input{
+    width: 240px
 }
 
-.container-fluid {
+.page {
+    display: flex;
+    background: lightblue;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.page-fluid {
     width: 100%;
-    padding-right: 0;
-    padding-left: 0;
     margin-right: auto;
     margin-left: auto;
 }
@@ -26,6 +27,10 @@ html, body {
     width: 100%;
 }
 
+.section-header {
+    justify-content: center;
+    display: flex;
+}
 
 .weather-section {
     width: 85%;
@@ -38,13 +43,15 @@ html, body {
     overflow-y: auto;
     height: calc(100vh - 60px);
     padding-left: 10px;
+    padding-right: 5px;
 }
 
 .news-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: lightblue;
+    border: 1px solid #00008B; /* Dark blue color */
     padding: 10px;
     margin-bottom: 10px;
+    border-radius: 5px;
 }
 
 .news-card img {
@@ -89,9 +96,9 @@ html, body {
 }
 
 .header {
+    background: lightblue;
     margin: 0;
     width: 100%;
-    background-color: white;
     padding: 10px 20px;
     display: flex;
     justify-content: center;
@@ -105,6 +112,7 @@ html, body {
 
 .content {
     display: flex;
+    padding-left: 10px;
     flex-grow: 1;
     padding-top: 60px;
 }

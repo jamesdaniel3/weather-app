@@ -129,7 +129,7 @@ const Weather = () => {
     };
 
     return (
-        <div className="container">
+        <div className="page">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             </meta>
 
@@ -139,18 +139,17 @@ const Weather = () => {
                     value={input}
                     onChange={handleInputChange}
                     placeholder="Search by City or Postal Code"
+                    className={"input"}
                 />
-                <button className = "button" onClick={fetchCoordinates}>Get Weather</button>
+                <button className= "btn" onClick={fetchCoordinates}>Get Weather</button>
             </div>
             <div className="content">
                 <div className="weather-section">
                     {weatherData && (
                         <div>
-                            <h3>Current Weather:</h3>
-                            <p>Temperature: {weatherData.main.temp}°C</p>
-                            <p>Description: {weatherData.weather[0].description}</p>
+                            <h3>It's currently {weatherData.main.temp}°C</h3>
                             <div>
-                                <h3>Hourly Forecast (Next 24 hours):</h3>
+                                <h4 className="section-header">Hourly Forecast (Next 24 hours):</h4>
                                 <div className="scrollable-row">
                                     {hourlyData.slice(0, 24).map((hour, index) => (
                                         <div key={index} className="forecast-card">
@@ -162,7 +161,7 @@ const Weather = () => {
                                 </div>
                             </div>
                         <div>
-                            <h3>Daily Forecast (Next 7 days):</h3>
+                            <h4 className="section-header">Daily Forecast (Next 7 days):</h4>
                             <div className="scrollable-row">
                                 {dailyData.slice(0, 7).map((day, index) => (
                                     <div key={index} className="forecast-card">
